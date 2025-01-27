@@ -22,7 +22,7 @@ const client = new MongoClient (mongoURL)
 await client.connect()
 const dataBase = client.db('DBName')
 
-//export const xCollection = dataBase.collection<>('nameOfCollection')
+// export const xCollection = dataBase.collection<>('nameOfCollection')
 
 const server = new ApolloServer({
   typeDefs : schema,
