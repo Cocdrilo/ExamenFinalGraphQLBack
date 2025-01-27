@@ -6,18 +6,23 @@ import { resolvers } from "./resolvers.ts";
 import {Collection, MongoClient, ObjectId} from "mongodb"
 import { schema } from "./schema.ts";
 
-const mongoUrl = "mongodb+srv://cocdrilo:cocdrilo@nebrijatest.n7ral.mongodb.net/?retryWrites=true&w=majority&appName=NebrijaTest";
+const mongoURL = Deno.env.get("mongoURL");
 
-const client = new MongoClient (mongoUrl)
+if (!mongoURL) {
+  throw new Error("La variable de entorno 'mongoURL' no está configurada");
+}
+
+const ninjaApiKey = Deno.env.get("apiNinjaKey");
+
+if (!ninjaApiKey) {
+  throw new Error("La variable de entorno 'apiNinjaKey' no está configurada");
+}
+
+const client = new MongoClient (mongoURL)
 await client.connect()
 const dataBase = client.db('DBName')
 
 //export const xCollection = dataBase.collection<>('nameOfCollection')
-
-if(!mongoUrl){
-  console.error('no url in env')
-  console.error('Error en la URL')
-}
 
 const server = new ApolloServer({
   typeDefs : schema,
