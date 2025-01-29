@@ -1,7 +1,6 @@
 //Alejandro Lana
 import {ApolloServer} from "@apollo/server"
 import {startStandaloneServer} from "@apollo/server/standalone";
-//import { schema } from "./schema.ts";
 import { resolvers } from "./resolvers.ts";
 import {Collection, MongoClient, ObjectId} from "mongodb"
 import { schema } from "./schema.ts";
@@ -32,7 +31,7 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-  context:async () => ({}),
+  context:async () => ({/*XCollection*/}),
   listen: { port: 8080 },
 });
 
