@@ -27,7 +27,7 @@ export const resolvers = {
 
         datetime : async (parent:Restaurant_Model,__:unknown,context:Context) : Promise<string> =>{
 
-            const hour = await fetch_Hour_From_NinjaApi(parent.timezone)
+            const hour:string = await fetch_Hour_From_NinjaApi(parent.timezone)
 
             return hour
 
@@ -35,21 +35,21 @@ export const resolvers = {
 
         temperature: async (parent:Restaurant_Model,__:unknown,context:Context) : Promise<number> =>{
 
-            const temperature = await fetch_temperature_From_NinjaApi(parent.city)
+            const temperature:number = await fetch_temperature_From_NinjaApi(parent.city)
 
             return temperature
 
         },
         address : (parent:Restaurant_Model,__:unknown,context:Context) : string =>{
 
-            const address = parent.address + ", " + parent.city + ", " + parent.country
+            const address:string = parent.address + ", " + parent.city + ", " + parent.country
             return address
         }
     },
 
     Mutation : {
         addRestaurant : async(_:unknown,args:{name:string,address:string,city:string,telephone_number:string},context:Context):Promise<Restaurant_Model> =>{
-            const validphone_Timezone = await check_telephone_number(args.telephone_number)
+            const validphone_Timezone:Phone_Return = await check_telephone_number(args.telephone_number)
 
             if(!validphone_Timezone.is_valid){
                 throw new GraphQLError ("Error, teléfono no válido,")
@@ -72,7 +72,6 @@ export const resolvers = {
 
             const insertPhone = await context.Restaurant_Collection.insertOne(newRestaurant)
 
-            console.log(insertPhone.insertedId + " Insertado con exito")
 
             return newRestaurant
 
@@ -154,6 +153,7 @@ const fetch_Hour_From_NinjaApi = async (timezone:string,):Promise<string> => {
 }
 
 const fetch_temperature_From_NinjaApi = async(city:string):Promise<number> =>{
+    //Primera Parte que obtiene la latiud y longitud usando la ciudad
     try {
         const url = "https://api.api-ninjas.com/v1/city?name="+ city
 
@@ -173,6 +173,7 @@ const fetch_temperature_From_NinjaApi = async(city:string):Promise<number> =>{
         console.log(lat_lon)
 
         try {
+            //Segunda parte que obtiene la temperatura usando la latitud y longitud
             const url = "https://api.api-ninjas.com/v1/weather?lat=" + lat_lon.latitude + "&lon=" + lat_lon.longitude
 
             const response = await fetch(url, {
@@ -186,10 +187,10 @@ const fetch_temperature_From_NinjaApi = async(city:string):Promise<number> =>{
             return jsonResponse.temp
 
         }catch (errorApiClima){
-            throw new GraphQLError("Error al intentar fetchear el clima con la latitud y longitud")
+            throw new GraphQLError("Error al intentar fetchear el clima con la latitud y longitud" + errorApiClima)
         }
 
     } catch (fetchError) {
-        throw new GraphQLError("Error en la api al intentar sacar la latitud y longitud")
+        throw new GraphQLError("Error en la api al intentar sacar la latitud y longitud " + fetchError)
     }
 }
